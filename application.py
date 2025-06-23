@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 # Create API blueprint
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -89,17 +89,17 @@ def api_suggest_trick():
 
 
 # Register the API blueprint
-app.register_blueprint(api)
+application.register_blueprint(api)
 
-@app.route('/')
+@application.route('/')
 def home():
     return render_template('index.html', upcoming_events=UPCOMING_EVENTS, last_events=FRONT_PAGE_PAST_EVENTS)
 
-@app.route('/past_events', methods=['GET'])
+@application.route('/past_events', methods=['GET'])
 def past_events():
     return render_template('past_events.html', past_events=ALL_PAST_EVENTS)
 
-@app.route('/generate_route', methods=['GET', 'POST'])
+@application.route('/generate_route', methods=['GET', 'POST'])
 def generate_route():
     if request.method == 'GET':
         return render_template('generate_route.html', 
@@ -136,15 +136,15 @@ def generate_route():
     except NotEnoughTricksFoundException:
         return '<p class="no-tricks">No tricks were generated. Try adjusting your criteria.</p>'
 
-@app.route('/host_event', methods=['GET'])
+@application.route('/host_event', methods=['GET'])
 def host_event():
     return render_template('host_event.html', team=TEAM)
 
-@app.route('/equipment_list', methods=['GET'])
+@application.route('/equipment_list', methods=['GET'])
 def equipment_list():
     return render_template('equipment_list.html')
 
-@app.route('/build_route')
+@application.route('/build_route')
 def build_route():
     route_param = request.args.get('route', type=str)
     initial_route = None
@@ -171,7 +171,7 @@ def build_route():
                          DEFAULT_MIN_TRICK_DIFFICULTY=DEFAULT_MIN_TRICK_DIFFICULTY,
                          DEFAULT_MAX_TRICK_DIFFICULTY=DEFAULT_MAX_TRICK_DIFFICULTY)
 
-@app.route('/created_route', methods=['GET'])
+@application.route('/created_route', methods=['GET'])
 def created_route():
     route_param = request.args.get('route')
     if not route_param:
@@ -184,11 +184,11 @@ def created_route():
         flash(f'Error loading route: {str(e)}')
         return redirect(url_for('build_route'))
 
-@app.route('/donate')
+@application.route('/donate')
 def donate():
     return render_template('donate.html')
 
-@app.route('/suggest_trick', methods=['GET'])
+@application.route('/suggest_trick', methods=['GET'])
 def suggest_trick():
     return render_template('suggest_trick.html',
                          prop_options=list(Prop),
@@ -204,9 +204,9 @@ def suggest_trick():
                          DEFAULT_MIN_TRICK_DIFFICULTY=DEFAULT_MIN_TRICK_DIFFICULTY,
                          DEFAULT_MAX_TRICK_DIFFICULTY=DEFAULT_MAX_TRICK_DIFFICULTY)
 
-@app.route('/contribute/software')
+@application.route('/contribute/software')
 def software_contribution():
     return render_template('software_contribution.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    application.run(host='0.0.0.0', port=5001, debug=True)
